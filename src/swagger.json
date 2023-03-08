@@ -1,0 +1,2497 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "E-Fama API",
+    "description": "This is the API for e-fama smart contract d'app",
+    "contact": {
+      "email": "legal@coronet.africa"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "river-engine-375015.rj.r.appspot.com",
+  "basePath": "/api/v1",
+  "tags": [
+    { "name": "Admin", "description": "Endpoints for admins" },
+    { "name": "Farmer", "description": "Endpoints for farmers" },
+    { "name": "Buyer", "description": "Endpoints for buyers" },
+    { "name": "Logistics", "description": "Endpoints for logistics companies" }
+  ],
+  "schemes": ["https"],
+  "consumes": ["application/json", "multipart/form-data"],
+  "produces": ["application/json", "multipart/form-data"],
+  "responses": {
+    "400": {
+      "description": "Bad Request",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "200": {
+      "description": "Success",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "201": {
+      "description": "Created",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "Resource not found",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "204": {
+      "description": "No Content - Resource deleted successfully",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "name": "Authorization",
+      "in": "header",
+      "type": "apiKey",
+      "description": "Authorization header"
+    }
+  },
+  "definitions": {
+    "Coupon": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "code": {
+          "type": "string"
+        },
+        "product": {
+          "type": "string"
+        },
+        "numberOfCouponsAvailable": {
+          "type": "integer"
+        },
+        "couponPrice": {
+          "type": "string"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "PromoCode": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "code": {
+          "type": "string"
+        },
+        "discount": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "SpecialEvent": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "farmer": {
+          "type": "string"
+        },
+        "product": {
+          "type": "string"
+        },
+        "coupon": {
+          "type": "string"
+        },
+        "promoCode": {
+          "type": "string"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "owner": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "photos": {
+          "type": "array",
+          "items": {}
+        }
+      }
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "buyer_id": {
+          "type": "string"
+        },
+        "farmer_id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer"
+        },
+        "region": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Product"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "paid", "cancelled"]
+        },
+        "datePurchased": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "Buyer": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "user": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["commercial", "consumer"]
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "businessType": {
+          "type": "string"
+        },
+        "companySize": {
+          "type": "string"
+        },
+        "revenueSize": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "farmer", "buyer", "logistics"]
+        },
+        "phone": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "otp": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "Farmer": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "user": {
+          "type": "string"
+        },
+        "land": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "string"
+            },
+            "isPloughed": {
+              "type": "boolean"
+            },
+            "ownership": {
+              "type": "string"
+            }
+          }
+        },
+        "funding": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "hasCropInsurance": {
+              "type": "boolean"
+            },
+            "bank": {
+              "type": "string"
+            }
+          }
+        },
+        "certifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "farmType": {
+          "type": "string",
+          "enum": ["fruits", "vegetables", "legumes"]
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "registrationNumber": {
+          "type": "string"
+        },
+        "hasPackHouse": {
+          "type": "boolean"
+        },
+        "isLookingForFunding": {
+          "type": "boolean"
+        },
+        "businessType": {
+          "type": "string"
+        },
+        "companySize": {
+          "type": "string"
+        },
+        "revenueSize": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Product"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "Logistics": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer",
+          "readOnly": true
+        },
+        "user": {
+          "type": "string"
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "line1": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "town": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            }
+          }
+        },
+        "position": {
+          "type": "string",
+          "enum": ["driver", "owner"]
+        },
+        "location": {
+          "type": "string"
+        },
+        "accountType": {
+          "type": "string"
+        },
+        "companySize": {
+          "type": "string"
+        },
+        "revenueSize": {
+          "type": "string"
+        },
+        "numberOfVehicles": {
+          "type": "string"
+        },
+        "vehicleType": {
+          "type": "string",
+          "enum": ["motorcycle", "van", "truck", "heavy duty truck"]
+        },
+        "licenseCode": {
+          "type": "string",
+          "enum": [
+            "Code A - motorcycle",
+            "Code B [08] - Light motor vehicle",
+            "Code C [10] - Heavy motor vehicle",
+            "Code D [14] - Combination & Articulated vehicle"
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    }
+  },
+  "paths": {
+    "/signup": {
+      "post": {
+        "tags": ["Farmer", "Buyer", "Logistics"],
+        "description": "Sign up a new user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["email", "firstname", "lastname", "username", "password", "confirmPassword", "role"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "firstname": {
+                  "type": "string"
+                },
+                "lastname": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": ["admin", "buyer", "farmer", "logistics"],
+                  "default": "buyer"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "confirmPassword": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "summary": "OTP is sent to the email. Verify OTP with the '/verify-otp' endpoint",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+
+                "data": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/admin/login": {
+      "post": {
+        "tags": ["Admin"],
+        "description": "Log in admin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["email", "password"],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      }
+    },
+
+    "/login": {
+      "post": {
+        "tags": ["Farmer", "Buyer", "Logistics"],
+        "description": "Log in a registered user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      }
+    },
+
+    "/logout": {
+      "get": {
+        "description": "Logs out current user",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/verify-otp": {
+      "post": {
+        "tags": ["Farmer", "Buyer", "Logistics"],
+        "description": "Verify OTP sent to phone number",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["email", "otp"],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "otp": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/password": {
+      "patch": {
+        "description": "Update user password",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "oldPassword": {
+                  "type": "string"
+                },
+                "newPassword": {
+                  "type": "string"
+                },
+                "confirmNewPassword": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/kyc/buyer": {
+      "patch": {
+        "description": "Upload KYC for buyer - update their profile",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["commercial", "consumer"]
+                },
+                "businessName": {
+                  "type": "string"
+                },
+                "businessType": {
+                  "type": "string"
+                },
+                "companySize": {
+                  "type": "string"
+                },
+                "revenueSize": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/kyc/logistics": {
+      "patch": {
+        "description": "Upload KYC for buyer - update their profile",
+        "tags": ["Logistics"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "object",
+                  "properties": {
+                    "line1": {
+                      "type": "string"
+                    },
+                    "city": {
+                      "type": "string"
+                    },
+                    "town": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "position": {
+                  "type": "string",
+                  "enum": ["driver", "owner"]
+                },
+                "location": {
+                  "type": "string"
+                },
+                "accountType": {
+                  "type": "string"
+                },
+                "companySize": {
+                  "type": "string"
+                },
+                "revenueSize": {
+                  "type": "string"
+                },
+                "numberOfVehicles": {
+                  "type": "string"
+                },
+                "vehicleType": {
+                  "type": "string",
+                  "enum": ["motorcycle", "van", "truck", "heavy duty truck"]
+                },
+                "licenseCode": {
+                  "type": "string",
+                  "enum": [
+                    "Code A - motorcycle",
+                    "Code B [08] - Light motor vehicle",
+                    "Code C [10] - Heavy motor vehicle",
+                    "Code D [14] - Combination & Articulated vehicle"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/kyc/farmer": {
+      "patch": {
+        "description": "Upload KYC for farmer - update their profile",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "land": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "string"
+                    },
+                    "isPloughed": {
+                      "type": "boolean"
+                    },
+                    "ownership": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "funding": {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string"
+                    },
+                    "hasCropInsurance": {
+                      "type": "boolean"
+                    },
+                    "bank": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "certifications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "farmType": {
+                  "type": "string",
+                  "enum": ["fruits", "vegetables", "legumes"]
+                },
+                "businessName": {
+                  "type": "string"
+                },
+                "registrationNumber": {
+                  "type": "string"
+                },
+                "hasPackHouse": {
+                  "type": "boolean"
+                },
+                "isLookingForFunding": {
+                  "type": "boolean"
+                },
+                "businessType": {
+                  "type": "string"
+                },
+                "companySize": {
+                  "type": "string"
+                },
+                "revenueSize": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/promo-codes": {
+      "get": {
+        "description": "Get all promo codes",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PromoCode"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new promo code",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["code", "discount", "expiryDate"],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "discount": {
+                  "type": "number"
+                },
+                "expiryDate": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "$ref": "#/definitions/PromoCode"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/special-events": {
+      "get": {
+        "description": "Get all special events",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SpecialEvent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new special event",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["name", "farmer", "quantity", "startDate", "endDate"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "product": {
+                  "type": "string"
+                },
+                "farmer": {
+                  "type": "string"
+                },
+                "coupon": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "string"
+                },
+                "promoCode": {
+                  "type": "string"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "$ref": "#/definitions/SpecialEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/special-events/{event_id}": {
+      "get": {
+        "description": "Get a special event",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "$ref": "#/definitions/SpecialEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a special event",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["name", "farmer", "quantity", "startDate", "endDate"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "product": {
+                  "type": "string"
+                },
+                "farmer": {
+                  "type": "string"
+                },
+                "coupon": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "string"
+                },
+                "promoCode": {
+                  "type": "string"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/payment/product": {
+      "post": {
+        "description": "Create a new payment link for a product",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["product_name", "price", "quantity"],
+              "properties": {
+                "product_name": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "quantity": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/promo-codes/{promo_id}": {
+      "get": {
+        "description": "Get a single promo code",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "parameters": [
+          {
+            "name": "promo_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a promo code",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "promo_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "isValid": {
+                  "type": "boolean"
+                },
+                "discount": {
+                  "type": "number"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a promo code",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "promo_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/coupons": {
+      "get": {
+        "description": "Get all coupons",
+        "tags": ["Admin", "Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coupon"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new coupon",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["product_id", "numberOfCouponsAvailable", "couponPrice", "startDate", "endDate"],
+              "properties": {
+                "product_id": {
+                  "type": "string"
+                },
+                "numberOfCouponsAvailable": {
+                  "type": "number"
+                },
+                "couponPrice": {
+                  "type": "number"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "$ref": "#/definitions/Coupon"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/coupons/{coupon_id}": {
+      "get": {
+        "description": "Get a single coupon",
+        "tags": ["Admin", "Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "coupon_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a coupon",
+        "tags": ["Farmer", "Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "coupon_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "product_id": {
+                  "type": "string"
+                },
+                "numberOfCouponsAvailable": {
+                  "type": "number"
+                },
+                "couponPrice": {
+                  "type": "number"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a coupon",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "coupon_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/user/profile": {
+      "get": {
+        "description": "Get user profile",
+        "tags": ["Farmer", "Buyer", "Logistics", "Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Get all users",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new user",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["email", "firstname", "lastname", "username", "role", "phone", "location"],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": ["farmer", "buyer", "logistics", "admin"]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "data": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "description": "Get user details",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      },
+      "patch": {
+        "description": "Update user details",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstname": {
+                  "type": "string"
+                },
+                "lastname": {
+                  "type": "string"
+                },
+                "isVerified": {
+                  "type": "boolean"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a user",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      }
+    },
+
+    "/category": {
+      "get": {
+        "description": "Get all categories",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new category",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/201"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/400"
+        }
+      }
+    },
+    "/category/{category_id}": {
+      "get": {
+        "description": "Get a category",
+        "tags": ["Admin", "Buyer", "Farmer", "Logistics"],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a category",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a category",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          }
+        }
+      }
+    },
+
+    "/reviews": {
+      "post": {
+        "description": "Create a new review",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["farmer_id", "order_id", "rating"],
+              "properties": {
+                "farmer_id": {
+                  "type": "string"
+                },
+                "order_id": {
+                  "type": "string"
+                },
+                "rating": {
+                  "type": "integer"
+                },
+                "comment": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/201"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/reviews/{review_id}": {
+      "patch": {
+        "description": "Update a review",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["rating"],
+              "properties": {
+                "rating": {
+                  "type": "integer"
+                },
+                "comment": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a review",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/admin/orders": {
+      "get": {
+        "description": "Get all orders",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/admin/orders/{order_id}": {
+      "get": {
+        "description": "Get a single order",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+
+      "patch": {
+        "description": "Update an order",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete an order",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "description": "Create a new order",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["farmer_id", "product_id", "quantity"],
+              "properties": {
+                "farmer_id": {
+                  "type": "string"
+                },
+                "products": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "quantity": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/201"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/buyer/orders": {
+      "get": {
+        "description": "Get all buyer orders",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/buyer/orders/{order_id}": {
+      "get": {
+        "description": "Get single buyer order",
+        "tags": ["Buyer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/products": {
+      "get": {
+        "description": "Get all products",
+        "tags": ["Buyer", "Admin", "Farmer", "Logistics"],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/products/{product_id}": {
+      "get": {
+        "description": "Get a product",
+        "tags": ["Buyer", "Admin", "Farmer", "Logistics"],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/admin/products": {
+      "post": {
+        "description": "Create a new product for a farmer",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "consumes": "multipart/form-data",
+        "parameters": [
+          {
+            "name": "photos",
+            "in": "formData",
+            "type": "file",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "photos": {
+                  "type": "file",
+                  "format": "base64"
+                }
+              }
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["name", "description", "price", "photos", "category", "image"],
+              "properties": {
+                "owner": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "integer"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/201"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/admin/products/{product_id}": {
+      "patch": {
+        "description": "Update a product",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "integer"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "isApproved": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a product",
+        "tags": ["Admin"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+
+    "/farmer/inventory": {
+      "get": {
+        "description": "Get all products for a farmer",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/farmer/products": {
+      "post": {
+        "description": "Create a new product as a farmer",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": ["name", "description", "price", "photos", "category", "image"],
+              "properties": {
+                "owner": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "integer"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                },
+                "photos": {
+                  "type": "array",
+                  "items": {}
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/201"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    },
+    "/farmer/products/{product_id}": {
+      "patch": {
+        "description": "Update a product as a farmer",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "integer"
+                },
+                "category": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a product as a farmer",
+        "tags": ["Farmer"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/200"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          }
+        }
+      }
+    }
+
+  }
+}
