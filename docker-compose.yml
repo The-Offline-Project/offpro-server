@@ -9,6 +9,11 @@ services:
       - '80:5000'
     depends_on:
       - mongo
+    environment:
+      - NODE_ENV=development
+      -  JWT_SECRET=BeBNuHjmsXNoUGjekeLIztJi2ykAIR8aefOv7FIyURUb4m6I2dRUQ53uT71ohGk1
+      -  TWILIO_ACCOUNT_SID=AC2b9bc48d2d4fe44292e22671d9d396c2
+      -  TWILIO_AUTH_TOKEN=756c3336bb5d3893d40a683420d83176
     volumes:
       - ./:/usr/app/src
       
