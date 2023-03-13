@@ -5,14 +5,14 @@ const User = require("../models/user.model");
 const UserRepo = require("./user.repo");
 
 class AuthRepo {
-  static async signupUser({ email,  password, phone }) {
+  static async signupUser({ email,  password, phone,username }) {
     try {
       let response = { msg: "", status: null, data: null };
 
       //   encrypt password
       const hashedPassword = await CryptoHelper.encryptPassword(password);
 
-      const user = await User.create({ email, password: hashedPassword ,phone});
+      const user = await User.create({ email, password: hashedPassword ,phone,username});
 
       if (user ) {
         return { ...response, msg: "User created successfully", status: 201, data: user };
@@ -38,15 +38,15 @@ class AuthRepo {
       if (!validPassword) {
         return { ...response, msg: "Invalid password", status: 400 };
       }
+      return { ...response, msg: "user login successfully", status: 200 };
+      // const otp = await CryptoHelper.generateOtp();
+      // // get user info and send otp to user phone
+      // if (otp) {
+      //   await User.findOneAndUpdate({ email }, { otp });
 
-      const otp = await CryptoHelper.generateOtp();
-      // get user info and send otp to user phone
-      if (otp) {
-        await User.findOneAndUpdate({ email }, { otp });
-
-        return { ...response, msg: "OTP generated", status: 200, data: otp };
-      }
-      return { ...response, msg: "Could not geneate OTP", status: 400 };
+      //   return { ...response, msg: "OTP generated", status: 200, data: otp };
+      // }
+      // return { ...response, msg: "Could not geneate OTP", status: 400 };
 
       // const verificationSent = await TwilioHelper.sendVerificationSms(userExists.phone);
 

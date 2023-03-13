@@ -118,7 +118,7 @@ class UserController {
   static async editUser(req, res) {
     try {
       const { user_id } = req.params;
-      const { firstname, lastname, role, phone, location, isVerified } = req.body;
+      const { firstname, lastname, phone, isVerified } = req.body;
 
       if (!user_id) {
         return res.status(400).json({ msg: "User ID is required" });
@@ -128,8 +128,6 @@ class UserController {
         user_id,
         firstname,
         lastname,
-        location,
-        role,
         phone,
         isVerified,
       });

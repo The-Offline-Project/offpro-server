@@ -16,6 +16,7 @@ const userSchema = new Schema(
       trim: true,
       index: true,
       maxlength: 50,
+      required:[true ,"Username is required"]
     },
     email: {
       type: String,
@@ -31,12 +32,11 @@ const userSchema = new Schema(
     },
    
     phone: {
-      type: String,
-      required: [true, "Phone number is required"],
+      type: String
     },
     pin: {
       type: String,
-      min: [4, "Pin must be at least 6 characters long"],
+      min: [4, "Pin must be at least 4 characters long"],
     },
     isVerified: {
       type: Boolean,
@@ -46,10 +46,10 @@ const userSchema = new Schema(
       type: String,
       default: "N/A",
     },
-    otp: {
+    bvn:{
       type: String,
-      default: null,
-    },
+
+    }
   },
   { timestamps: true },
 );

@@ -1,6 +1,7 @@
 const CryptoHelper = require("../config/crypto-helper");
 const User = require("../models/user.model");
 const AuthRepo = require("../repositories/auth.repo");
+const TwilioHelper = require("../config/twilio-helper")
 
 class AuthController {
   /**
@@ -9,7 +10,7 @@ class AuthController {
    *  */
   static async signup(req, res) {
     try {
-      const { email,  password,  confirmPassword ,phone} = req.body;
+      const { email,  password,  confirmPassword ,username} = req.body;
 
       if (!email ||!password) {
         return res.status(400).json({ msg: "Please provide all required fields", status: 400 });
@@ -32,12 +33,13 @@ class AuthController {
       // }
 
       //   go ahead and create the user
-      const response = await AuthRepo.signupUser({ email,  password, phone});
+      const response = await AuthRepo.signupUser({ email,  password, phone,username});
 
       if (response.status === 201) {
         // generate otp and send to user phone
-        // const otp = await CryptoHelper.generateOtp();
-        // await User.findOneAndUpdate({ email }, { otp });
+        const otp = await CryptoHelper.generateOtp();
+        TwilioHelper.sendVerificationSms(phone);
+        await User.findOneAndUpdate({ email }, { otp });
 
         return res.status(201).json({ msg: "User created", status: 200 });
       }

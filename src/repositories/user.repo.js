@@ -107,7 +107,7 @@ class UserRepo {
     try {
       let response = { msg: "", status: null, data: null };
 
-      const users = await User.find().select("-password -token -otp");
+      const users = await User.find().select("-password  -otp");
 
       if (users.length === 0) {
         return { ...response, msg: "No users found", status: 200 };

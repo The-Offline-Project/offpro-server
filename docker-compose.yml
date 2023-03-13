@@ -12,8 +12,9 @@ services:
     environment:
       - NODE_ENV=development
       -  JWT_SECRET=BeBNuHjmsXNoUGjekeLIztJi2ykAIR8aefOv7FIyURUb4m6I2dRUQ53uT71ohGk1
-      -  TWILIO_ACCOUNT_SID=AC2b9bc48d2d4fe44292e22671d9d396c2
-      -  TWILIO_AUTH_TOKEN=756c3336bb5d3893d40a683420d83176
+      -  TWILIO_ACCOUNT_SID=ACcda791381d569747b33c5568bedfd11a
+      -  TWILIO_AUTH_TOKEN=2b07209d80c907243263a46a722d33ba
+      -  TWILIO_SERVICE_ID=VAd5df8e634ec0fe9c775db69c99e45563
     volumes:
       - ./:/usr/app/src
       
