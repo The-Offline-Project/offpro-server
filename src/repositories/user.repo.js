@@ -69,23 +69,46 @@ class UserRepo {
             return { ...response, msg: "Buyer profile not found", status: 404 };
           }
 
-          return { ...response, msg: "Buyer profile retrieved successfully", status: 200, data: buyerProfile };
+          return {
+            ...response,
+            msg: "Buyer profile retrieved successfully",
+            status: 200,
+            data: buyerProfile,
+          };
 
         case roles.FARMER:
           const farmerProfile = await Farmer.findOne({ user: user_id });
           if (!farmerProfile) {
-            return { ...response, msg: "Farmer profile not found", status: 404 };
+            return {
+              ...response,
+              msg: "Farmer profile not found",
+              status: 404,
+            };
           }
 
-          return { ...response, msg: "Farmer profile retrieved successfully", status: 200, data: farmerProfile };
+          return {
+            ...response,
+            msg: "Farmer profile retrieved successfully",
+            status: 200,
+            data: farmerProfile,
+          };
 
         case roles.LOGISTICS:
           const logisticsProfile = await Logistics.findOne({ user: user_id });
           if (!logisticsProfile) {
-            return { ...response, msg: "Logistics profile not found", status: 404 };
+            return {
+              ...response,
+              msg: "Logistics profile not found",
+              status: 404,
+            };
           }
 
-          return { ...response, msg: "Logistics profile retrieved successfully", status: 200, data: logisticsProfile };
+          return {
+            ...response,
+            msg: "Logistics profile retrieved successfully",
+            status: 200,
+            data: logisticsProfile,
+          };
 
         case roles.ADMIN:
           const adminProfile = await Admin.findOne({ user: user_id });
@@ -93,7 +116,12 @@ class UserRepo {
             return { ...response, msg: "Admin profile not found", status: 404 };
           }
 
-          return { ...response, msg: "Admin profile retrieved successfully", status: 200, data: adminProfile };
+          return {
+            ...response,
+            msg: "Admin profile retrieved successfully",
+            status: 200,
+            data: adminProfile,
+          };
 
         default:
           return response;
@@ -113,13 +141,18 @@ class UserRepo {
         return { ...response, msg: "No users found", status: 200 };
       }
 
-      return { ...response, msg: "Users retrieved successfully", status: 200, data: users };
+      return {
+        ...response,
+        msg: "Users retrieved successfully",
+        status: 200,
+        data: users,
+      };
     } catch (error) {
       console.log("🚀 ~ error", error);
     }
   }
 
-  static async createUser({ location, firstname, lastname, username, email, role, phone, buyerType }) {
+  static async createUser({ username, email, password }) {
     try {
       let response = { msg: "", status: null, data: null };
 
@@ -135,32 +168,43 @@ class UserRepo {
       }
 
       //  generate password and save in their model
-      const generatedPassword = await CryptoHelper.generatePassword();
-      console.log("🚀 ~ generatedPassword", generatedPassword);
-      const hashedPassword = await CryptoHelper.encryptPassword(generatedPassword);
+      // const generatedPassword = await CryptoHelper.generatePassword();
+      // console.log("🚀 ~ generatedPassword", generatedPassword);
+      const hashedPassword = await CryptoHelper.encryptPassword(password);
 
       const user = await User.create({
-        firstname,
-        lastname,
         username,
         email,
-        role,
-        phone,
+
         password: hashedPassword,
-        location,
       });
       console.log("🚀 ~ user", user);
 
       if (user) {
-        await this.createProfile({ user_id: user._id, role: user.role, buyerType });
-        const createdUser = await User.findOne({ email: user.email }).select("-token -otp -password");
+        // await this.createProfile({
+        //   user_id: user._id,
+        //   role: user.role,
+        //   buyerType,
+        // });
+        const createdUser = await User.findOne({ email: user.email }).select(
+          " -password"
+        );
         // TODO send generated password to the user email/phone
         await sendMail(
           createdUser.email,
           "Account Created",
-          `Your account has been set up, your password is ${generatedPassword}. Please log in and update your password.`,
+          "account",
+          {
+            password:password
+          }
+
         );
-        return { ...response, msg: "User created", status: 201, data: createdUser };
+        return {
+          ...response,
+          msg: "User created",
+          status: 201,
+          data: createdUser,
+        };
       }
       return { ...response, msg: "Could not create user", status: 400 };
     } catch (error) {
@@ -168,7 +212,15 @@ class UserRepo {
     }
   }
 
-  static async editUser({ user_id, location, isVerified, firstname, lastname, role, phone }) {
+  static async editUser({
+    user_id,
+    location,
+    isVerified,
+    firstname,
+    lastname,
+    role,
+    phone,
+  }) {
     try {
       let response = { msg: "", status: null, data: null };
 
@@ -188,14 +240,16 @@ class UserRepo {
           role,
           isVerified: isVerified ? true : false,
         },
-        { new: true },
+        { new: true }
       ).select("-token -password -otp");
 
       if (updatedUser) {
         // TODO Update user's profile  IF ONLY the role is also updated
         return {
           ...response,
-          msg: isVerified ? "User verified successfully" : "User updated successfully",
+          msg: isVerified
+            ? "User verified successfully"
+            : "User updated successfully",
           status: 200,
           data: updatedUser,
         };
@@ -222,9 +276,17 @@ class UserRepo {
 
       if (deletedUser) {
         // delete user's profile
-        await this.deleteProfile({ user_id: existingUser._id, role: existingUser.role });
+        await this.deleteProfile({
+          user_id: existingUser._id,
+          role: existingUser.role,
+        });
 
-        return { ...response, msg: "User deleted successfully", status: 200, data: deletedUser };
+        return {
+          ...response,
+          msg: "User deleted successfully",
+          status: 200,
+          data: deletedUser,
+        };
       }
 
       return { ...response, msg: "Could not delete user", status: 400 };

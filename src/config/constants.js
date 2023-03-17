@@ -11,9 +11,10 @@ module.exports = {
     LOGISTICS: "logistics",
   },
   db: {
-    URL: `mongodb+srv://${USER}:${PASS}@${CLUSTER}/${NAME}?retryWrites=true&authSource=admin&w=majority`,
+    URL: `mongodb+srv://${USER}:${PASS}@cluster0.ug7frlj.mongodb.net/?retryWrites=true&w=majority`,
   },
   stripe: {
     KEY: "",
   },
 };
+//

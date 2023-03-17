@@ -1,6 +1,8 @@
-const CryptoHelper = require("../config/crypto-helper");
-const User = require("../models/user.model");
-const AuthRepo = require("../repositories/auth.repo");
+const CryptoHelper = require("../config/crypto-helper")
+const User= require("../models/user.model")
+const UserRepo= require("../repositories/auth.repo");
+const UserRE = require("../repositories/user.repo");
+const sendMail = require("../config/notify")
 const TwilioHelper = require("../config/twilio-helper")
 
 class AuthController {
@@ -10,9 +12,9 @@ class AuthController {
    *  */
   static async signup(req, res) {
     try {
-      const { email,  password,  confirmPassword ,username} = req.body;
+      const { email,  password,  confirmPassword ,username,phone} = req.body;
 
-      if (!email ||!password) {
+      if (!email ||!password || !username || !phone)  {
         return res.status(400).json({ msg: "Please provide all required fields", status: 400 });
       }
 
@@ -23,25 +25,35 @@ class AuthController {
 
       //   check if user exists
       const existingEmail = await User.findOne({ email });
-      // const existingUsername = await User.findOne({ username });
+       const existingUsername = await User.findOne({ username });
 
       if (existingEmail) {
         return res.status(400).json({ msg: "Email already exists" });
       }
-      // if (existingUsername) {
-      //   return res.status(400).json({ msg: "Username already exists" });
-      // }
+      if (existingUsername) {
+        return res.status(400).json({ msg: "Username already exists" });
+      }
 
       //   go ahead and create the user
-      const response = await AuthRepo.signupUser({ email,  password, phone,username});
+      const response = await UserRE.createUser({ email,  password, phone,username});
 
       if (response.status === 201) {
         // generate otp and send to user phone
         const otp = await CryptoHelper.generateOtp();
-        TwilioHelper.sendVerificationSms(phone);
+        await sendMail.sendMail(
+          email,
+          "Otp verification",
+          "otp",
+          {
+            "email": email,
+            "otp":otp
+          }
+          )
+
+        // TwilioHelper.sendVerificationSms(phone);
         await User.findOneAndUpdate({ email }, { otp });
 
-        return res.status(201).json({ msg: "User created", status: 200 });
+        return res.status(201).json({ msg: "User created", status: 200,response });
       }
       return res.status(400).json(response);
     } catch (error) {
@@ -63,7 +75,7 @@ class AuthController {
         return res.status(400).json({ msg: "Please provide email and password" });
       }
 
-      const response = await AuthRepo.adminLogin({ email, password });
+      const response = await UserRepo.adminLogin({ email, password });
 
       if (response.status === 404) {
         return res.status(404).json(response);
@@ -92,7 +104,7 @@ class AuthController {
         return res.status(400).json({ msg: "Email and password are required" });
       }
 
-      const checkLogin = await AuthRepo.login({ email, password });
+      const checkLogin = await UserRepo.login({ email, password });
 
       if (checkLogin.status === 200) {
         return res.status(200).json(checkLogin);
@@ -121,7 +133,7 @@ class AuthController {
         return res.status(400).json({ msg: "OTP and email are required" });
       }
 
-      const response = await AuthRepo.verifyOtp({ otp, email });
+      const response = await UserRepo.verifyOtp({ otp, email });
 
       if (response.status === 200) {
         return res.status(200).json(response);
@@ -143,7 +155,7 @@ class AuthController {
       const { id: user_id } = req.user;
       const { oldPassword, newPassword, confirmNewPassword } = req.body;
 
-      const result = await AuthRepo.updatePassword({ user_id, oldPassword, newPassword, confirmNewPassword });
+      const result = await _updatePassword({ user_id, oldPassword, newPassword, confirmNewPassword });
 
       if (result.status === 200) {
         return res.status(200).json(result);
@@ -161,7 +173,7 @@ class AuthController {
    *  */
   static async logout(req, res) {
     try {
-      const result = await AuthRepo.logout({ req });
+      const result = await _logout({ req });
 
       if (result.status === 200) {
         return res.status(200).json(result);
@@ -173,4 +185,4 @@ class AuthController {
   }
 }
 
-module.exports = AuthController;
+module.exports=AuthController;

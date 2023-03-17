@@ -7,10 +7,17 @@ services:
       context: .
     ports:
       - '80:5000'
-    depends_on:
-      - mongo
+    # depends_on:
+    #   - mongo
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - OAUTH_CLIENTID=344032536233-dt1m4fru8kjs1g8aj76sc1usfm01i7aq.apps.googleusercontent.com
+      - OAUTH_CLIENT_SECRET=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
+      - OAUTH_REFRESH_TOKEN=1//04va1MamqvcQnCgYIARAAGAQSNwF-L9IrL6UrnthG6rLL2vh6odDSocvuj78isOaetu3dUfi3Ry9y4qMYZ68KlPyzbgVWT1Cfli8
+      - MAIL_PASSWORD=tgfvckomyadtxfop
+      - MAIL_USERNAME=blinkztyler@gmail.com
       -  JWT_SECRET=BeBNuHjmsXNoUGjekeLIztJi2ykAIR8aefOv7FIyURUb4m6I2dRUQ53uT71ohGk1
       -  TWILIO_ACCOUNT_SID=ACcda791381d569747b33c5568bedfd11a
       -  TWILIO_AUTH_TOKEN=2b07209d80c907243263a46a722d33ba
@@ -18,12 +25,12 @@ services:
     volumes:
       - ./:/usr/app/src
       
-  mongo:
-    container_name: mongo
-    volumes:
-      - offproDb:/data/db
-    image: mongo
-    ports:
-      - '27017:27017'
-volumes:
-  offproDb:
+#   mongo:
+#     container_name: mongo
+#     volumes:
+#       - offproDb:/data/db
+#     image: mongo
+#     ports:
+#       - '27017:27017'
+# volumes:
+#   offproDb:
